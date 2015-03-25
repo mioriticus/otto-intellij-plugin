@@ -7,12 +7,10 @@ import com.intellij.find.findUsages.FindUsagesManager;
 import com.intellij.find.findUsages.JavaClassFindUsagesOptions;
 import com.intellij.find.impl.FindManagerImpl;
 import com.intellij.ide.highlighter.JavaFileType;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.AbstractProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaPsiFacade;
@@ -40,7 +38,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jetbrains.annotations.NotNull;
@@ -156,7 +153,7 @@ public class OttoProjectHandler extends AbstractProjectComponent {
 
   private void maybeScheduleAnotherSearch() {
     if (startupScanAttemptsLeft.decrementAndGet() > 0) {
-      ApplicationManager.getApplication().invokeLater(new Runnable() {
+      DumbService.getInstance(myProject).smartInvokeLater(new Runnable() {
         @Override
         public void run() {
           findEventsViaMethodsAnnotatedSubscribe();
@@ -217,7 +214,7 @@ public class OttoProjectHandler extends AbstractProjectComponent {
   }
 
   private void scheduleRefreshOfEventFiles() {
-    ApplicationManager.getApplication().invokeLater(new Runnable() {
+    DumbService.getInstance(myProject).smartInvokeLater(new Runnable() {
       @Override
       public void run() {
         Set<String> eventClasses;
